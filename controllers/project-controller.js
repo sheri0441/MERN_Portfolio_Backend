@@ -1,6 +1,6 @@
 const HttpError = require("../models/http-error");
 const data = require("../models/data");
-const fs = require("fs");
+const deleteImage = require("../models/s3-delete-image");
 
 const addProject = async (req, res, next) => {
   const { title, live, github, description } = req.body;
@@ -25,10 +25,10 @@ const addProject = async (req, res, next) => {
       live: live,
       github: github,
     },
-    imageUrl: image.path,
+    imageUrl: image.key,
   };
 
-  singleData.projects.push(newProject);
+  singleData.projects.unshift(newProject);
 
   try {
     singleData.save();
@@ -42,7 +42,7 @@ const addProject = async (req, res, next) => {
 
   res.status(200).json({
     message: "Project added",
-    project: singleData.projects[singleData.projects.length - 1],
+    project: singleData.projects[0],
   });
 };
 
@@ -66,7 +66,7 @@ const deleteProject = async (req, res, next) => {
     next(error);
   }
 
-  fs.unlink(findProject.imageUrl, (err) => err && console.log(err));
+  await deleteImage(findProject.imageUrl);
 
   let projectIndex = await singleData.projects.indexOf(findProject);
 
@@ -113,11 +113,9 @@ const updateProject = async (req, res, next) => {
   project.links.github = github;
   project.links.live = live;
   if (!!req.file) {
-    fs.unlink(project.imageUrl, (err) => {
-      err && console.log(err);
-    });
+    await deleteImage(project.imageUrl);
 
-    project.imageUrl = req.file.path;
+    project.imageUrl = req.file.key;
   }
 
   try {

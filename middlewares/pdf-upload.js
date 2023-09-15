@@ -1,12 +1,13 @@
 const multer = require("multer");
+const { S3Client } = require("@aws-sdk/client-s3");
+const multerS3 = require("multer-s3");
+const s3 = require("../models/s3client");
 
 const pdfUpload = multer({
-  limits: 50000000,
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, "uploads/");
-    },
-    filename: (req, file, cb) => {
+  storage: multerS3({
+    s3: s3,
+    bucket: process.env.AWS_BUCKET,
+    key: function (req, file, cb) {
       cb(null, "Shehayar_Resume.pdf");
     },
   }),

@@ -12,7 +12,7 @@ const updateAboutAndResumeHandler = async (req, res, next) => {
 
   singleData.about = about;
   if (req.file) {
-    singleData.resume = req.file.path;
+    singleData.resume = req.file.key;
   }
 
   try {
@@ -21,11 +21,9 @@ const updateAboutAndResumeHandler = async (req, res, next) => {
     console.log(err);
   }
 
-  res.json({ message: "Your about and resume updated." });
+  res.json({
+    message: "Your about and resume updated.",
+  });
 };
 
-const downloadPDF = async (req, res, next) => {
-  res.download("uploads/Shehayar_Resume.pdf");
-};
-
-module.exports = { updateAboutAndResumeHandler, downloadPDF };
+module.exports = updateAboutAndResumeHandler;
