@@ -51,7 +51,7 @@ const sendUpdateCode = async (req, res, next) => {
   }
 
   const name = "website";
-  const email = "Sheharyarali689@gmail.com";
+  const email = "sheharyarali689@gmail.com";
   const description = `This is your change password code: ${token}`;
   const subject = "code for your new password";
 
